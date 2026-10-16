@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        AI Health Assistant
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<header>
+
+    <div class="logo">
+
+        🧠 AI Health Assistant
+
+    </div>
+
+
+    <nav>
+
+        <a href="#prediction">
+            Prediction
+        </a>
+
+        <a href="#chatbot">
+            AI Chat
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =====================================================
+     HERO
+====================================================== -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <span class="badge">
+            AIML-01
+        </span>
+
+        <h1>
+            AI-Powered Health Assistant
+        </h1>
+
+        <p>
+            An educational machine-learning prototype that
+            analyzes symptoms, medical history and basic
+            health parameters to provide a health-risk estimate.
+        </p>
+
+
+        <div class="warning">
+
+            ⚠️ This is an educational prototype,
+            not a medical diagnosis.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<main>
+
+
+<!-- =====================================================
+     PATIENT INFORMATION
+====================================================== -->
+
+<section
+    id="prediction"
+    class="card"
+>
+
+    <div class="section-title">
+
+        <span>
+            01
+        </span>
+
+        <h2>
+            Patient Information
+        </h2>
+
+    </div>
+
+
+    <div class="form-grid">
+
+
+        <div class="form-group">
+
+            <label>
+                Age
+            </label>
+
+            <input
+                type="number"
+                id="age"
+                value="25"
+                min="1"
+                max="120"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Temperature °C
+            </label>
+
+            <input
+                type="number"
+                id="temperature"
+                value="36.8"
+                step="0.1"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Heart Rate (BPM)
+            </label>
+
+            <input
+                type="number"
+                id="heart_rate"
+                value="75"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Systolic BP
+            </label>
+
+            <input
+                type="number"
+                id="systolic_bp"
+                value="120"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Diastolic BP
+            </label>
+
+            <input
+                type="number"
+                id="diastolic_bp"
+                value="80"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                BMI
+            </label>
+
+            <input
+                type="number"
+                id="bmi"
+                value="22"
+                step="0.1"
+            >
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     SYMPTOMS
+====================================================== -->
+
+<section class="card">
+
+    <div class="section-title">
+
+        <span>
+            02
+        </span>
+
+        <h2>
+            Select Symptoms
+        </h2>
+
+    </div>
+
+
+    <p class="description">
+
+        Select all symptoms currently applicable.
+
+    </p>
+
+
+    <div class="checkbox-grid">
+
+        {% for symptom in symptoms %}
+
+        <label class="checkbox-card">
+
+            <input
+                type="checkbox"
+                name="symptoms"
+                value="{{ symptom }}"
+            >
+
+            <span>
+
+                {{ symptom.replace("_", " ").title() }}
+
+            </span>
+
+        </label>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     MEDICAL HISTORY
+====================================================== -->
+
+<section class="card">
+
+    <div class="section-title">
+
+        <span>
+            03
+        </span>
+
+        <h2>
+            Medical History
+        </h2>
+
+    </div>
+
+
+    <p class="description">
+
+        Select relevant previous medical-history factors.
+
+    </p>
+
+
+    <div class="checkbox-grid">
+
+        {% for history in medical_history %}
+
+        <label class="checkbox-card">
+
+            <input
+                type="checkbox"
+                name="medical_history"
+                value="{{ history }}"
+            >
+
+            <span>
+
+                {{ history
+                   .replace("_history", "")
+                   .replace("_", " ")
+                   .title()
+                }}
+
+            </span>
+
+        </label>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     PREDICT BUTTON
+====================================================== -->
+
+<div class="predict-area">
+
+    <button
+        class="predict-button"
+        onclick="predictHealth()"
+    >
+
+        🔍 Analyze Health Information
+
+    </button>
+
+</div>
+
+
+
+<!-- =====================================================
+     RESULT
+====================================================== -->
+
+<section
+    id="result"
+    class="card result-card hidden"
+>
+
+    <div class="section-title">
+
+        <span>
+            04
+        </span>
+
+        <h2>
+            Prediction Result
+        </h2>
+
+    </div>
+
+
+    <div id="resultContent">
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     CHATBOT
+====================================================== -->
+
+<section
+    id="chatbot"
+    class="card"
+>
+
+    <div class="section-title">
+
+        <span>
+            05
+        </span>
+
+        <h2>
+            AI Health Chatbot
+        </h2>
+
+    </div>
+
+
+    <p class="description">
+
+        Ask general health-related questions.
+
+    </p>
+
+
+    <div
+        id="chatMessages"
+        class="chat-messages"
+    >
+
+        <div class="bot-message">
+
+            <strong>
+                AI Assistant:
+            </strong>
+
+            Hello! Ask me a general health question
+            about symptoms, healthy habits, allergies,
+            asthma, diabetes, fever, cough or when to
+            seek medical care.
+
+        </div>
+
+    </div>
+
+
+    <div class="chat-input">
+
+        <input
+            type="text"
+            id="chatQuestion"
+            placeholder="Example: What should I do for a fever?"
+        >
+
+        <button
+            onclick="sendQuestion()"
+        >
+
+            Send
+
+        </button>
+
+    </div>
+
+
+    <div class="quick-questions">
+
+        <button
+            onclick="quickQuestion('What should I do for fever?')"
+        >
+            Fever
+        </button>
+
+        <button
+            onclick="quickQuestion('What should I do for cough?')"
+        >
+            Cough
+        </button>
+
+        <button
+            onclick="quickQuestion('What is a healthy lifestyle?')"
+        >
+            Healthy Lifestyle
+        </button>
+
+        <button
+            onclick="quickQuestion('When should I see a doctor?')"
+        >
+            Doctor
+        </button>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     FOOTER
+====================================================== -->
+
+<footer>
+
+    <p>
+        AI-Powered Health Assistant
+    </p>
+
+    <p>
+        Educational AIML Project
+    </p>
+
+</footer>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+
+// ========================================================
+// PREDICTION
+// ========================================================
+
+async function predictHealth() {
+
+
+    const symptoms =
+        Array.from(
+            document.querySelectorAll(
+                'input[name="symptoms"]:checked'
+            )
+        ).map(
+            checkbox => checkbox.value
+        );
+
+
+    const medicalHistory =
+        Array.from(
+            document.querySelectorAll(
+                'input[name="medical_history"]:checked'
+            )
+        ).map(
+            checkbox => checkbox.value
+        );
+
+
+    if (symptoms.length === 0) {
+
+        alert(
+            "Please select at least one symptom."
+        );
+
+        return;
+
+    }
+
+
+    const patientData = {
+
+        age:
+            document.getElementById(
+                "age"
+            ).value,
+
+        temperature:
+            document.getElementById(
+                "temperature"
+            ).value,
+
+        heart_rate:
+            document.getElementById(
+                "heart_rate"
+            ).value,
+
+        systolic_bp:
+            document.getElementById(
+                "systolic_bp"
+            ).value,
+
+        diastolic_bp:
+            document.getElementById(
+                "diastolic_bp"
+            ).value,
+
+        bmi:
+            document.getElementById(
+                "bmi"
+            ).value,
+
+        symptoms:
+            symptoms,
+
+        medical_history:
+            medicalHistory
+
+    };
+
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+    const content =
+        document.getElementById(
+            "resultContent"
+        );
+
+
+    result.classList.remove(
+        "hidden"
+    );
+
+
+    content.innerHTML = `
+
+        <div class="loading">
+
+            🤖 Analyzing health information...
+
+        </div>
+
+    `;
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "/predict",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            patientData
+                        )
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            content.innerHTML = `
+
+                <div class="error">
+
+                    ${data.message}
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // TOP PREDICTIONS
+        // ==================================================
+
+        let topPredictions = "";
+
+
+        data.top_predictions.forEach(
+            item => {
+
+                topPredictions += `
+
+                    <div class="prediction-item">
+
+                        <span>
+                            ${item.disease}
+                        </span>
+
+                        <strong>
+                            ${item.probability}%
+                        </strong>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        // ==================================================
+        // GUIDANCE
+        // ==================================================
+
+        let guidance = "";
+
+
+        data.guidance.forEach(
+            item => {
+
+                guidance += `
+
+                    <li>
+                        ${item}
+                    </li>
+
+                `;
+
+            }
+        );
+
+
+        // ==================================================
+        // RESULT HTML
+        // ==================================================
+
+        content.innerHTML = `
+
+            <div class="main-result">
+
+                <div class="result-icon">
+                    🩺
+                </div>
+
+                <div>
+
+                    <p class="result-label">
+                        Highest model likelihood
+                    </p>
+
+                    <h3>
+                        ${data.prediction}
+                    </h3>
+
+                    <div class="confidence">
+
+                        ${data.confidence}%
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-section">
+
+                <h4>
+                    Top 3 Model Estimates
+                </h4>
+
+                ${topPredictions}
+
+            </div>
+
+
+            <div class="result-section">
+
+                <h4>
+                    Why this result?
+                </h4>
+
+                <p>
+                    ${data.explanation}
+                </p>
+
+            </div>
+
+
+            <div class="result-section">
+
+                <h4>
+                    General Preventive Guidance
+                </h4>
+
+                <ul>
+                    ${guidance}
+                </ul>
+
+            </div>
+
+
+            <div class="medical-warning">
+
+                ⚠️ This prediction is an educational
+                machine-learning estimate. It is not a
+                diagnosis or a substitute for professional
+                medical advice.
+
+            </div>
+
+        `;
+
+
+        result.scrollIntoView({
+            behavior: "smooth"
+        });
+
+    }
+
+
+    catch (error) {
+
+        content.innerHTML = `
+
+            <div class="error">
+
+                Unable to connect to the Flask server.
+
+                <br><br>
+
+                Make sure you have started:
+
+                <br>
+
+                <strong>
+                    python app.py
+                </strong>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+// ========================================================
+// CHATBOT
+// ========================================================
+
+async function sendQuestion() {
+
+
+    const input =
+        document.getElementById(
+            "chatQuestion"
+        );
+
+
+    const question =
+        input.value.trim();
+
+
+    if (!question) {
+
+        return;
+
+    }
+
+
+    addMessage(
+        question,
+        "user"
+    );
+
+
+    input.value = "";
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "/chat",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            question:
+                                question
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (data.success) {
+
+            addMessage(
+                data.answer,
+                "bot"
+            );
+
+        }
+
+        else {
+
+            addMessage(
+                "Unable to process the question.",
+                "bot"
+            );
+
+        }
+
+    }
+
+
+    catch (error) {
+
+        addMessage(
+            "Server connection error.",
+            "bot"
+        );
+
+    }
+
+}
+
+
+
+// ========================================================
+// ADD CHAT MESSAGE
+// ========================================================
+
+function addMessage(
+    message,
+    type
+) {
+
+
+    const chat =
+        document.getElementById(
+            "chatMessages"
+        );
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    if (type === "user") {
+
+        div.className =
+            "user-message";
+
+        div.innerHTML =
+            `<strong>You:</strong> ${message}`;
+
+    }
+
+    else {
+
+        div.className =
+            "bot-message";
+
+        div.innerHTML =
+            `<strong>AI Assistant:</strong> ${message}`;
+
+    }
+
+
+    chat.appendChild(
+        div
+    );
+
+
+    chat.scrollTop =
+        chat.scrollHeight;
+
+}
+
+
+
+// ========================================================
+// QUICK QUESTION
+// ========================================================
+
+function quickQuestion(
+    question
+) {
+
+    document.getElementById(
+        "chatQuestion"
+    ).value =
+        question;
+
+
+    sendQuestion();
+
+}
+
+
+
+// ========================================================
+// ENTER KEY
+// ========================================================
+
+document
+    .getElementById(
+        "chatQuestion"
+    )
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                sendQuestion();
+
+            }
+
+        }
+    );
+
+
+</script>
+
+
+</body>
+
+</html>
